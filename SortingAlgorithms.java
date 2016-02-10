@@ -16,6 +16,7 @@ public class SortingAlgorithms
         //mergeSort( array );
         //mergeSortBU( array );
         //quickSort( array );
+        //quickSort3( array );
         //printArray( array );
         sortingAnalysis();
     }
@@ -23,7 +24,7 @@ public class SortingAlgorithms
     public static void sortingAnalysis()
     {
         final int MAX_SIZE = 50000; // 50,000 items
-        final int NUM_ALGO = 6;
+        final int NUM_ALGO = 7;
         final boolean print = false;
         int[] array = new int[MAX_SIZE];
         int[] copy  = new int[MAX_SIZE];
@@ -117,9 +118,22 @@ public class SortingAlgorithms
             System.out.print("Quick Sort    : ");
             printArray( copy );
         }
+        copyArray( array, copy );
         //------------------------------------------
-        
-        
+
+
+        //--------Quick Sort 3 Partition------------
+        before = System.currentTimeMillis();
+        quickSort3( copy );
+        time[6] = System.currentTimeMillis() - before;
+        if ( print )
+        {
+            System.out.print("Quick Sort 3   : ");
+            printArray( copy );
+        }
+        //------------------------------------------
+
+
         //---------Print Running Times--------------
             System.out.println("Sorting Algorithms Running Times (in ms)");
             System.out.println("Selection Sort: " + time[0] );
@@ -128,6 +142,7 @@ public class SortingAlgorithms
             System.out.println("Shell Sort    : " + time[3] );
             System.out.println("Merge Sort    : " + time[4] );
             System.out.println("Quick Sort    : " + time[5] );
+            System.out.println("Quick Sort 3  : " + time[6] );
         //------------------------------------------
     }
 //-----------------------------------------------------------
@@ -304,6 +319,27 @@ public class SortingAlgorithms
         }
         swap( array, lo, j );
         return j;
+    }
+//-----------------------------------------------------------
+    public static void quickSort3( int[] array )
+    {
+        sort3( array, 0, array.length-1 );
+    }
+//-----------------------------------------------------------
+    public static void sort3( int[] array, int lo, int hi )
+    {
+        if ( lo >= hi ) return;
+        int lt = lo, gt = hi, i = lo;
+        int value = array[lo];
+        while( i <= gt )
+        {
+            if      ( array[i] < value ) swap( array, lt++, i++ );
+            else if ( array[i] > value ) swap( array, i, gt-- );
+            else                         i++;
+        }
+        // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi].
+        sort( array, lo, lt-1 );
+        sort( array, gt+1, hi );
     }
 //-----------------------------------------------------------
     public static void swap( int[] array, int i, int j )
