@@ -17,15 +17,16 @@ public class SortingAlgorithms
         //mergeSortBU( array );
         //quickSort( array );
         //quickSort3( array );
+        //heapSort( array );
         //printArray( array );
         sortingAnalysis();
     }
 //-----------------------------------------------------------
     public static void sortingAnalysis()
     {
-        final int MAX_SIZE = 50000; // 50,000 items
-        final int NUM_ALGO = 7;
-        final boolean print = false;
+        final int MAX_SIZE = 15; // 50,000 items
+        final int NUM_ALGO = 8;
+        final boolean print = true;
         int[] array = new int[MAX_SIZE];
         int[] copy  = new int[MAX_SIZE];
         long[] time  = new long[NUM_ALGO];
@@ -128,8 +129,20 @@ public class SortingAlgorithms
         time[6] = System.currentTimeMillis() - before;
         if ( print )
         {
-            System.out.print("Quick Sort 3   : ");
+            System.out.print("Quick Sort 3  : ");
             printArray( copy );
+        }
+        //------------------------------------------
+        
+        //-----------Heap Sort Partition------------
+        before = System.currentTimeMillis();
+        heapSort( copy );
+        time[7] = System.currentTimeMillis() - before;
+        if ( print )
+        {
+            System.out.print("Heap Sort     : ");
+            printArray( copy );
+            System.out.println("");
         }
         //------------------------------------------
 
@@ -143,6 +156,7 @@ public class SortingAlgorithms
             System.out.println("Merge Sort    : " + time[4] );
             System.out.println("Quick Sort    : " + time[5] );
             System.out.println("Quick Sort 3  : " + time[6] );
+            System.out.println("Heap Sort     : " + time[7] );
         //------------------------------------------
     }
 //-----------------------------------------------------------
@@ -340,6 +354,42 @@ public class SortingAlgorithms
         // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi].
         sort( array, lo, lt-1 );
         sort( array, gt+1, hi );
+    }
+//-----------------------------------------------------------
+    public static void heapSort( int[] array )
+    {
+        // Heaps worth with starting items beginning at 1
+        // So create a copy and expand by 1.
+        int[] copy = new int[array.length+1];
+        System.arraycopy( array, 0, copy, 1, array.length );
+        int N = copy.length - 1;
+        heapify( copy, N );
+        printArray( copy );
+        while ( N > 1 )
+        {
+            swap( copy, 1, N-- );
+            sink( copy, 1, N );
+        }
+        System.arraycopy( copy, 1, array, 0, array.length );
+    }
+//-----------------------------------------------------------
+    public static void heapify( int[] array, int N)
+    {
+        for ( int k = N/2; k >= 1; k-- )
+            sink( array, k, N );
+    }
+//-----------------------------------------------------------
+    public static void sink( int[] array, int k, int N )
+    {
+        int j;
+        while ( 2*k <= N )
+        {
+            j = 2*k;
+            if ( j < N && array[j] < array[j+1] ) j++;
+            if ( array[k] > array[j] ) break;
+            swap( array, k, j );
+            k = j;
+        }
     }
 //-----------------------------------------------------------
     public static void swap( int[] array, int i, int j )
