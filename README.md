@@ -52,11 +52,15 @@ Sorts a single randomly generated array through all eight algorithms simultaneou
 - Elapsed time displayed per algorithm on completion
 - Bar chart rendered comparing execution times
 
+<img src="assets/preview.png" width="700" alt="Run All screenshot"/>
+
 ### Big O Analysis
 Runs all eight algorithms across six input sizes (`500 / 1k / 2k / 5k / 10k / 20k`) and plots the results as growth curves.
 
 - Line chart shows actual measured time vs input size for each algorithm
 - Dashed overlay curves show theoretical O(n²) and O(n log n) references, normalized to the data, so you can see how closely each algorithm tracks its complexity class
+
+<img src="assets/preview_bigo.png" width="700" alt="Big O Analysis screenshot"/>
 
 ---
 
