@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /////////////////////////////////////////////////////////////
 public class SortingAlgorithms
@@ -8,16 +9,16 @@ public class SortingAlgorithms
     {
         //int[] array = { 6, 3, 1, 9, 7, 8, 4, 2, 5 };
         //printArray( array );
-        //selectionSort( array );
-        //insertionSort( array );
-        //bubbleSort( array );
-        //shellSort( array );
+        //selectionSort( array, new AtomicInteger() );
+        //insertionSort( array, new AtomicInteger() );
+        //bubbleSort( array, new AtomicInteger() );
+        //shellSort( array, new AtomicInteger() );
         //shuffleSort( array );
-        //mergeSort( array );
-        //mergeSortBU( array );
-        //quickSort( array );
-        //quickSort3( array );
-        //heapSort( array );
+        //mergeSort( array, new AtomicInteger() );
+        //mergeSortBU( array, new AtomicInteger() );
+        //quickSort( array, new AtomicInteger() );
+        //quickSort3( array, new AtomicInteger() );
+        //heapSort( array, new AtomicInteger() );
         //printArray( array );
         sortingAnalysis();
     }
@@ -37,7 +38,7 @@ public class SortingAlgorithms
             array[i] = rnd.nextInt( 10 * MAX_SIZE );
             copy[i] = array[i];
         }
-        
+
         // Print Unsorted Array
         if ( print )
         {
@@ -45,9 +46,9 @@ public class SortingAlgorithms
             printArray( array );
         }
 
-        //-----------Insertion Sort-----------------
+        //-----------Selection Sort-----------------
         before = System.currentTimeMillis();
-        selectionSort( copy );
+        selectionSort( copy, new AtomicInteger() );
         time[0] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -56,11 +57,11 @@ public class SortingAlgorithms
         }
         copyArray( array, copy );
         //------------------------------------------
-        
-        
+
+
         //-------------Bubble Sort------------------
         before = System.currentTimeMillis();
-        bubbleSort( copy );
+        bubbleSort( copy, new AtomicInteger() );
         time[1] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -69,11 +70,11 @@ public class SortingAlgorithms
         }
         copyArray( array, copy );
         //------------------------------------------
-        
-        
+
+
         //------------Insertion Sort----------------
         before = System.currentTimeMillis();
-        insertionSort( copy );
+        insertionSort( copy, new AtomicInteger() );
         time[2] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -82,11 +83,11 @@ public class SortingAlgorithms
         }
         copyArray( array, copy );
         //------------------------------------------
-        
-        
+
+
         //---------------Shell Sort-----------------
         before = System.currentTimeMillis();
-        shellSort( copy );
+        shellSort( copy, new AtomicInteger() );
         time[3] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -99,7 +100,7 @@ public class SortingAlgorithms
 
         //---------------Merge Sort-----------------
         before = System.currentTimeMillis();
-        mergeSort( copy );
+        mergeSort( copy, new AtomicInteger() );
         time[4] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -112,7 +113,7 @@ public class SortingAlgorithms
 
         //----------------Quick Sort----------------
         before = System.currentTimeMillis();
-        quickSort( copy );
+        quickSort( copy, new AtomicInteger() );
         time[5] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -125,7 +126,7 @@ public class SortingAlgorithms
 
         //--------Quick Sort 3 Partition------------
         before = System.currentTimeMillis();
-        quickSort3( copy );
+        quickSort3( copy, new AtomicInteger() );
         time[6] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -133,10 +134,10 @@ public class SortingAlgorithms
             printArray( copy );
         }
         //------------------------------------------
-        
-        //-----------Heap Sort Partition------------
+
+        //-----------Heap Sort----------------------
         before = System.currentTimeMillis();
-        heapSort( copy );
+        heapSort( copy, new AtomicInteger() );
         time[7] = System.currentTimeMillis() - before;
         if ( print )
         {
@@ -160,25 +161,26 @@ public class SortingAlgorithms
         //------------------------------------------
     }
 //-----------------------------------------------------------
-    public static void selectionSort( int[] array )
+    public static void selectionSort( int[] array, AtomicInteger ops )
     {
         for ( int i = 0; i < array.length-1; i++ )
         {
-            int min = i; 
+            int min = i;
             for ( int j = i + 1; j < array.length; j++ )
             {
+                ops.incrementAndGet();
                 if ( array[min] > array[j] ) { min = j; }
             }
             swap( array, i, min );
         }
     }
 //-----------------------------------------------------------
-    public static void insertionSort( int[] array )
+    public static void insertionSort( int[] array, AtomicInteger ops )
     {
-        for ( int i = 0; i < array.length; i++ )
+        for ( int i = 1; i < array.length; i++ )
         {
             int j = i;
-            while ( j > 0 && array[j-1] > array[j] )
+            while ( j > 0 && ( ops.incrementAndGet() >= 0 ) && array[j-1] > array[j] )
             {
                 swap( array, j-1, j );
                 j--;
@@ -186,26 +188,26 @@ public class SortingAlgorithms
         }
     }
 //-----------------------------------------------------------
-    public static void bubbleSort( int[] array )
+    public static void bubbleSort( int[] array, AtomicInteger ops )
     {
         boolean isSorted = false;
 
         while ( !isSorted )
         {
             isSorted = true;
-            int j = 1;
-            for ( int i = 0; i < array.length -1; i++, j++ )
+            for ( int i = 0; i < array.length - 1; i++ )
             {
-                if ( array[i] > array[j] )
+                ops.incrementAndGet();
+                if ( array[i] > array[i+1] )
                 {
-                    swap( array, i, j );
+                    swap( array, i, i+1 );
                     isSorted = false;
                 }
             }
         }
     }
 //-----------------------------------------------------------
-    public static void shellSort( int[] array )
+    public static void shellSort( int[] array, AtomicInteger ops )
     {
         // Use increment sequence: 3x + 1...compute h
         int h = 1;
@@ -215,13 +217,13 @@ public class SortingAlgorithms
             if ( temp > array.length ) { break; }
             h = temp;
         }
-        
+
         while ( h > 0 )
         {
             for ( int i = 0; (i+h) < array.length; i++ )
             {
                 int j = i + h;
-                while ( ( (j-h) >= 0 ) && array[j-h] > array[j] )
+                while ( ( (j-h) >= 0 ) && ( ops.incrementAndGet() >= 0 ) && array[j-h] > array[j] )
                 {
                     swap( array, j-h, j );
                     j -= h;
@@ -239,12 +241,12 @@ public class SortingAlgorithms
         {
             shuffle[i] = random.nextInt( 999 + 1 );
         }
-        
+
         // Now Sort shuffle array while making the same changes
         // for array this will shuffle
         for ( int i = 0; i < shuffle.length-1; i++ )
         {
-            int min = i; 
+            int min = i;
             for ( int j = i + 1; j < shuffle.length; j++ )
             {
                 if ( shuffle[min] > shuffle[j] ) { min = j; }
@@ -256,39 +258,40 @@ public class SortingAlgorithms
         printArray( shuffle );
     }
 //-----------------------------------------------------------
-    public static void mergeSort( int[] array )
+    public static void mergeSort( int[] array, AtomicInteger ops )
     {
         int[] aux = new int[array.length];
-        sort( array, aux, 0, array.length-1 );
+        sort( array, aux, 0, array.length-1, ops );
     }
 //-----------------------------------------------------------
-    public static void sort( int[] arr, int[] aux, int lo, int hi )
+    public static void sort( int[] arr, int[] aux, int lo, int hi, AtomicInteger ops )
     {
         if ( lo >= hi ) return;
         int mid = lo + ( hi - lo )/2;
-        sort( arr, aux, lo, mid );
-        sort( arr, aux, mid+1, hi );
-        merge( arr, aux, lo, mid, hi );
+        sort( arr, aux, lo, mid, ops );
+        sort( arr, aux, mid+1, hi, ops );
+        merge( arr, aux, lo, mid, hi, ops );
     }
 //-----------------------------------------------------------
-    public static void merge( int[] arr, int[] aux, int lo, int mid, int hi )
+    public static void merge( int[] arr, int[] aux, int lo, int mid, int hi, AtomicInteger ops )
     {
         // Copy current contents of array to auxiliary array
         for ( int k = lo; k <= hi; k++ ) { aux[k] = arr[k]; }
-        
+
         int i = lo;
         int j = mid+1;
         for ( int k = lo; k <= hi; k++ )
         {
+            ops.incrementAndGet();
             if      ( i > mid )         arr[k] = aux[j++];
             else if ( j > hi  )         arr[k] = aux[i++];
             else if ( aux[i] < aux[j] ) arr[k] = aux[i++];
             else                        arr[k] = aux[j++];
-        
+
         }
     }
 //-----------------------------------------------------------
-    public static void mergeSortBU( int[] array )
+    public static void mergeSortBU( int[] array, AtomicInteger ops )
     {
         // Implements Bottom-Up merge sort version
         int[] aux = new int[array.length];
@@ -299,35 +302,35 @@ public class SortingAlgorithms
                 int lo = i;
                 int mid = i+n-1;
                 int hi = Math.min( i+n+n-1, array.length-1 );
-                merge( array, aux, lo, mid, hi );
+                merge( array, aux, lo, mid, hi, ops );
             }
         }
     }
 //-----------------------------------------------------------
-    public static void quickSort( int[] array )
+    public static void quickSort( int[] array, AtomicInteger ops )
     {
         // Can add shuffle here to guarantee NlogN performance
-        sort( array, 0, array.length-1 );
+        sort( array, 0, array.length-1, ops );
     }
 //-----------------------------------------------------------
-    public static void sort( int[] array, int lo, int hi )
+    public static void sort( int[] array, int lo, int hi, AtomicInteger ops )
     {
         if ( hi <= lo ) return;
-        int j = partition( array, lo, hi );
-        sort( array, lo, j-1 );
-        sort( array, j+1, hi );
+        int j = partition( array, lo, hi, ops );
+        sort( array, lo, j-1, ops );
+        sort( array, j+1, hi, ops );
     }
 //-----------------------------------------------------------
-    public static int partition( int[] array, int lo, int hi )
+    public static int partition( int[] array, int lo, int hi, AtomicInteger ops )
     {
         int i = lo;
         int j = hi+1;
         int value = array[lo];
         while ( true )
         {
-            while( array[++i] < value ) if ( i == hi ) break;
-            while( array[--j] > value ) if ( j == lo ) break;
-            
+            while( ops.incrementAndGet() >= 0 && array[++i] < value ) if ( i == hi ) break;
+            while( ops.incrementAndGet() >= 0 && array[--j] > value ) if ( j == lo ) break;
+
             if ( i >= j ) break;
             swap( array, i, j );
         }
@@ -335,57 +338,59 @@ public class SortingAlgorithms
         return j;
     }
 //-----------------------------------------------------------
-    public static void quickSort3( int[] array )
+    public static void quickSort3( int[] array, AtomicInteger ops )
     {
-        sort3( array, 0, array.length-1 );
+        sort3( array, 0, array.length-1, ops );
     }
 //-----------------------------------------------------------
-    public static void sort3( int[] array, int lo, int hi )
+    public static void sort3( int[] array, int lo, int hi, AtomicInteger ops )
     {
         if ( lo >= hi ) return;
         int lt = lo, gt = hi, i = lo;
         int value = array[lo];
         while( i <= gt )
         {
+            ops.incrementAndGet();
             if      ( array[i] < value ) swap( array, lt++, i++ );
             else if ( array[i] > value ) swap( array, i, gt-- );
             else                         i++;
         }
         // a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi].
-        sort( array, lo, lt-1 );
-        sort( array, gt+1, hi );
+        sort3( array, lo, lt-1, ops );
+        sort3( array, gt+1, hi, ops );
     }
 //-----------------------------------------------------------
-    public static void heapSort( int[] array )
+    public static void heapSort( int[] array, AtomicInteger ops )
     {
-        // Heaps worth with starting items beginning at 1
+        // Heaps work with starting items beginning at 1
         // So create a copy and expand by 1.
         int[] copy = new int[array.length+1];
         System.arraycopy( array, 0, copy, 1, array.length );
         int N = copy.length - 1;
-        heapify( copy, N );
-        printArray( copy );
+        heapify( copy, N, ops );
         while ( N > 1 )
         {
             swap( copy, 1, N-- );
-            sink( copy, 1, N );
+            sink( copy, 1, N, ops );
         }
         System.arraycopy( copy, 1, array, 0, array.length );
     }
 //-----------------------------------------------------------
-    public static void heapify( int[] array, int N)
+    public static void heapify( int[] array, int N, AtomicInteger ops )
     {
         for ( int k = N/2; k >= 1; k-- )
-            sink( array, k, N );
+            sink( array, k, N, ops );
     }
 //-----------------------------------------------------------
-    public static void sink( int[] array, int k, int N )
+    public static void sink( int[] array, int k, int N, AtomicInteger ops )
     {
         int j;
         while ( 2*k <= N )
         {
             j = 2*k;
+            ops.incrementAndGet();
             if ( j < N && array[j] < array[j+1] ) j++;
+            ops.incrementAndGet();
             if ( array[k] > array[j] ) break;
             swap( array, k, j );
             k = j;
